@@ -1,48 +1,111 @@
-<!doctype html>
-<html lang="pt-BR" data-theme="light">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <title>Modelo de Jogo — Jogos VR</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="app">
-      <header class="top">
-        <div>
-          <span class="kicker">Modelo</span>
-          <h1 id="title">Clique no Alvo</h1>
-          <p class="subtitle">Troque este jogo pelo seu. O contrato já está pronto.</p>
-        </div>
-        <button id="restart" class="btn" type="button">Reiniciar</button>
-      </header>
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Classes - Jogo Educacional</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="cenario-mar">
+  <!-- Elementos decorativos do cenário de fundo (mudam a cada fase) -->
+  <div class="fundo-decoracao" id="fundo-decoracao" aria-hidden="true"></div>
 
-      <main>
-        <div class="hud">
-          <span class="pill">Alvos: <strong id="score">0</strong>/<span id="total">10</span></span>
-          <span class="pill">Tempo: <strong id="timer">0,0s</strong></span>
-        </div>
-
-        <div id="board" class="board" aria-label="Área do jogo">
-          <p id="start-hint" class="start-hint">Clique no alvo para começar</p>
-        </div>
-      </main>
-
-      <footer class="bottom">
-        <p>Este é o arquivo <code>game.js</code>. Leia os comentários e adapte.</p>
-      </footer>
-    </div>
-
-    <div id="result" class="overlay" hidden>
-      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="result-title">
-        <div class="modal-icon" aria-hidden="true">🎯</div>
-        <h2 id="result-title">Muito bem!</h2>
-        <p id="result-text">Você concluiu o jogo.</p>
-        <button id="play-again" class="btn btn-primary full" type="button">Jogar de novo</button>
+  <main class="container">
+    <!-- Cabeçalho com título, progresso e botões de controle -->
+    <header class="cabecalho">
+      <div class="titulo-grupo">
+        <h1>Word Classes</h1>
+        <span class="subtitulo" id="nome-cenario">Cenário: Fundo do Mar</span>
       </div>
-    </div>
+      <div class="controles-topo">
+        <button type="button" id="btn-tema" class="btn-icone" aria-label="Alternar tema claro ou escuro" title="Mudar tema">
+          Tema
+        </button>
+        <button type="button" id="btn-tela-cheia" class="btn-icone" aria-label="Alternar tela cheia" title="Tela cheia">
+          Tela
+        </button>
+      </div>
+    </header>
 
-    <script src="game.js"></script>
-  </body>
+    <!-- Barra de informações da partida -->
+    <section class="painel-status" aria-label="Status do jogo">
+      <div class="status-item">
+        <span class="status-rotulo">Fase</span>
+        <strong id="texto-fase">1 / 6</strong>
+      </div>
+      <div class="status-item">
+        <span class="status-rotulo">Pontos</span>
+        <strong id="texto-pontos">0</strong>
+      </div>
+      <div class="status-item">
+        <span class="status-rotulo">Palavras</span>
+        <strong id="texto-progresso-palavras">0 / 2</strong>
+      </div>
+    </section>
+
+    <!-- Tela inicial do jogo -->
+    <section id="tela-inicio" class="cartao tela-ativa">
+      <h2>Monte as palavras e descubra as classes!</h2>
+      <p class="descricao">
+        Arraste o dedo (ou o mouse) pelas letras no círculo para formar <strong>verbos</strong> (ações) e <strong>substantivos</strong> (objetos). Você também pode clicar em cada letra!
+      </p>
+      <ul class="regras-lista">
+        <li>São <strong>6 fases</strong> com paisagens diferentes.</li>
+        <li>Leia as dicas de classe gramatical para descobrir cada palavra.</li>
+        <li>Se errar a palavra, não tem problema: tente quantas vezes quiser!</li>
+      </ul>
+      <button type="button" id="btn-iniciar" class="btn-principal">Começar a Jogar</button>
+    </section>
+
+    <!-- Tela principal do jogo -->
+    <section id="tela-jogo" class="cartao oculto" aria-live="polite">
+      <!-- Lista das palavras escondidas da fase atual -->
+      <div id="lista-palavras-alvo" class="palavras-alvo"></div>
+
+      <!-- Caixa de explicação sobre o acerto ou erro -->
+      <div id="caixa-feedback" class="feedback neutro" role="status">
+        Arraste ou clique nas letras abaixo para formar uma palavra!
+      </div>
+
+      <!-- Palavra sendo montada no momento -->
+      <div class="palavra-atual-box">
+        <span id="palavra-formada" class="palavra-formada">_</span>
+      </div>
+
+      <!-- Roda de letras estilo Word Connect -->
+      <div class="area-roda">
+        <svg id="svg-linhas" class="svg-linhas" aria-hidden="true"></svg>
+        <div id="roda-letras" class="roda-letras" role="group" aria-label="Letras disponíveis"></div>
+      </div>
+
+      <!-- Botões de ação da roda -->
+      <div class="acoes-roda">
+        <button type="button" id="btn-embaralhar" class="btn-secundario">Embaralhar</button>
+        <button type="button" id="btn-limpar" class="btn-secundario">Limpar</button>
+        <button type="button" id="btn-confirmar" class="btn-principal">Verificar</button>
+      </div>
+    </section>
+
+    <!-- Tela final de vitória -->
+    <section id="tela-fim" class="cartao oculto">
+      <h2>Parabéns! Você zerou o Word Classes!</h2>
+      <p class="descricao" id="resumo-final">
+        Você completou todas as 6 paisagens e treinou verbos e substantivos da Língua Portuguesa.
+      </p>
+      <div class="placar-final">
+        <div class="placar-dado">
+          <span>Pontuação Final</span>
+          <strong id="pontos-finais">0</strong>
+        </div>
+        <div class="placar-dado">
+          <span>Tempo Total</span>
+          <strong id="tempo-final">0s</strong>
+        </div>
+      </div>
+      <button type="button" id="btn-jogar-novamente" class="btn-principal">Jogar Novamente</button>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
 </html>
